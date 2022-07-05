@@ -43,7 +43,7 @@ dataset = read_csv(url, names=names)
 #Quantos objetos tem e em quantas categorias ta dividido
 print(dataset.shape)
 
-#visualização geral do banco de dados
+#visualização limitada geral do banco de dados
 print(dataset.head(20))
 
 #resumo das estatisticas
@@ -52,5 +52,21 @@ print(dataset.describe())
 #o método groupby é para mostrarmos a distribuição por meio de uma das categorias que definimos.
 #nesse caso estaremos visualizando pela classe, mas poderiamos buscar pela largura da petola, etc
 print(dataset.groupby('class').size())
+
+# Gráficos
+dataset.plot(kind='box', subplots=True, layout=(2,2), sharex=False, sharey=False)
+pyplot.show()
+
+#histograma para distribuição de frequência
+#nesse caso X ta sendo os atributos da planta e y a quantidade
+dataset.hist()
+pyplot.show()
+
+
+#analisando interações entre variáveis
+#parece um pouco com o histograma, porém levando em consideração duas variaveis
+scatter_matrix(dataset)
+pyplot.show()
+
 
 
