@@ -21,14 +21,43 @@ dataset = read_csv(url, names=attributes)
 data_values =  dataset.values
 
 #classes associadas a treino e teste de forma aleatória
-#x_train: dados de treino
-#x_validation: dados referentes aos tvalidacao (nesse caso 20%)
-#y_train: classes associadas ao dados de treino
-#y_validation: classes associadas ao dados de validacao
 X_train, X_validation, Y_train, Y_validation = train_test_split(data_values[:, 0:4], data_values[:, 4], test_size=0.20, random_state=1)
-#data_values[:, 0:4] - Mostra todos os atributos de cada objeto do db com as características
-#data_values[:, 4]) - Mostra todas as classes de cada objeto do db com as caraterísticas
+
+
+#visualização dos dados de treino e de testes.
+#note que X e Y são arrays, o primeiro com as flores e seus atributos e o segundo com os outputs de cada flor
+print(f"X_train: \n {X_train} \n" )
+print(f"X_validation: \n {X_validation} \n" )
+print(f"Y_train: \n {Y_train} \n" )
+print(f"Y_validation: \n {Y_validation} \n" )
 
 #agora iremos testar o algoritmo com a chamada validação cruzada: k-cross validation
 #usaremos a métrica de acurácia (positivo / total) para avaliar os modelos
 #esse modelos que nos referimos são os algoritmos que iremos testar \o/
+models = []
+models.append(('LR', LogisticRegression(solver='liblinear', multi_class='ovr')))
+models.append(('LDA', LinearDiscriminantAnalysis()))
+models.append(('KNN', KNeighborsClassifier()))
+models.append(('CART', DecisionTreeClassifier()))
+models.append(('NB', GaussianNB()))
+models.append(('SVM', SVC(gamma='auto')))
+
+
+#Quando testarmos nosso algoritmo, a cada vez que a gente ta pegando os dados de treino e de test
+#então faremos a validacao cruzada de cada modelo, assim, cada um deles terá uma medida de acurácia mais precisa
+#depois, note que no momento de impressão do resultado de cada modelo, a gente ta pegando a média de todos os dez testes de cada um
+#além da média, também estamos imprimindo o desvio padrão
+results = []
+names = []
+for name, model in models:
+	kfold = StratifiedKFold(n_splits=10, random_state=1, shuffle=True)
+	cv_results = cross_val_score(model, X_train, Y_train, cv=kfold, scoring='accuracy')
+	results.append(cv_results)
+	names.append(name)
+	print('%s: %f (%f)' % (name, cv_results.mean(), cv_results.std()))
+
+
+# visualização por gráficos boxplot
+pyplot.boxplot(results, labels=names)
+pyplot.title('Algorithm Comparison')
+pyplot.show()
